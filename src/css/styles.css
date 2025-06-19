@@ -101,10 +101,6 @@ span {
   color: rgba(236, 41, 41, 1);
 }
 
-.hidden {
-  display: none;
-}
-
 .page-center {
   justify-content: center;
   align-items: center;
@@ -198,4 +194,7 @@ span {
 .load-btn:hover {
   background-color: #6c8cff;
   color: #fff;
+}
+.hidden {
+  display: none;
 }

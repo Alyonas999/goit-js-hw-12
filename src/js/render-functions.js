@@ -7,7 +7,11 @@ const lightbox = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
     captionDelay: 250,
 });
+
+
 const galleryContainer = document.querySelector('.gallery');
+
+
 export function createGallery(images) {
     const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {  
       return `
@@ -36,17 +40,12 @@ export function clearGallery() {
 export function showLoader() {
   const loader = document.querySelector('.loader');
   loader.classList.remove('hidden');
-  requestAnimationFrame(() => {
-    loader.classList.add('show'); 
-  });
 }
 
 export function hideLoader() {
   const loader = document.querySelector('.loader');
-  loader.classList.remove('show');
-  setTimeout(() => {
     loader.classList.add('hidden');
-  }, 400); 
+  
 }
 
 export function showLoadMoreButton() {
