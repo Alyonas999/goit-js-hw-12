@@ -1,7 +1,13 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-import { getImagesByQuery } from './js/pixabay-api.js';
+import {
+  getImagesByQuery,
+  resetPage,
+  getCurrentPage,
+  incrementPage
+} from './js/pixabay-api.js';
+
 import {
   createGallery,
   clearGallery,
@@ -11,7 +17,6 @@ import {
   hideLoadMoreButton
 } from './js/render-functions.js';
 
-let currentPage = 1;
 let currentQuery = '';
 let totalImages = 0;
 let loadedImages = 0;
@@ -25,6 +30,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   clearGallery();
+  hideLoadMoreButton();
   showLoader();
 
   currentQuery = event.currentTarget.elements['search-text'].value.trim();
@@ -41,11 +47,11 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  currentPage = 1;
+  resetPage(currentQuery);
   loadedImages = 0;
 
   try {
-    const data = await getImagesByQuery(currentQuery, currentPage);
+    const data = await getImagesByQuery(currentQuery, getCurrentPage());
     totalImages = data.totalHits;
 
     if (data.hits.length === 0) {
@@ -61,7 +67,7 @@ form.addEventListener('submit', async (event) => {
     createGallery(data.hits);
     loadedImages = data.hits.length;
     showLoadMoreButton();
-    currentPage++;
+    incrementPage();
   } catch (error) {
     console.error(error);
   } finally {
@@ -70,12 +76,11 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
-
 loadMoreBtn.addEventListener('click', async () => {
   showLoader();
 
   try {
-    const data = await getImagesByQuery(currentQuery, currentPage);
+    const data = await getImagesByQuery(currentQuery, getCurrentPage());
 
     if (data.hits.length === 0) {
       hideLoadMoreButton();
@@ -84,6 +89,15 @@ loadMoreBtn.addEventListener('click', async () => {
 
     createGallery(data.hits);
     loadedImages += data.hits.length;
+
+    const { height: cardHeight } = document
+      .querySelector('.gallery-item')
+      .getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
 
     if (loadedImages >= totalImages) {
       hideLoadMoreButton();
@@ -94,7 +108,7 @@ loadMoreBtn.addEventListener('click', async () => {
       });
     }
 
-    currentPage++;
+    incrementPage();
   } catch (error) {
     console.error(error);
   } finally {
